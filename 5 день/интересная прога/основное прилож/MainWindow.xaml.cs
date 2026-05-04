@@ -8,77 +8,83 @@ namespace Master_floor
 {
     public partial class MainWindow : Window
     {
-        TestBaseEntities db = new TestBaseEntities();
+        private TestBaseEntities databaseContext = new TestBaseEntities();
 
         public MainWindow()
         {
             InitializeComponent();
-            tolist();
+            RefreshPartnerList();
         }
 
-        public void tolist()
+        public void RefreshPartnerList()
         {
-            var listpartners = new List<Partner>();
-            var partnersFromDb = db.Partners.ToList();
+            var partnerDisplayList = new List<Partner>();
+            var allPartners = databaseContext.Partners.ToList();
 
-            foreach (var a in partnersFromDb)
+            foreach (var partner in allPartners)
             {
-                var sum = db.Partners_product
-                            .Where(y => a.ID == y.ID_Partner)
-                            .Sum(x => (double?)x.Количество_продукции) ?? 0;
+                // Подсчет общего количества реализованной продукции
+                var totalQuantity = databaseContext.Partners_product
+                    .Where(sale => sale.ID_Partner == partner.ID)
+                    .Sum(sale => (double?)sale.Количество_продукции) ?? 0;
 
-                // Используем вынесенный метод для расчета скидки
-                string sale = DiscountCalculator.CalculateDiscount(sum);
+                // Получение скидки через отдельный метод
+                string discountValue = DiscountCalculator.CalculateDiscount(totalQuantity);
 
-                listpartners.Add(new Partner 
+                partnerDisplayList.Add(new Partner 
                 { 
-                    ID = a.ID, 
-                    Директор = a.Директор, 
-                    Наименование_партнера = a.Наименование_партнера, 
-                    Рейтинг = "Рейтинг: " + a.Рейтинг, 
-                    Телефон_партнера = a.Телефон_партнера, 
-                    Тип_партнера = a.Тип_партнера, 
-                    Скидка = sale 
+                    ID = partner.ID, 
+                    Директор = partner.Директор, 
+                    Наименование_партнера = partner.Наименование_партнера, 
+                    Рейтинг = "Рейтинг: " + partner.Рейтинг, 
+                    Телефон_партнера = partner.Телефон_партнера, 
+                    Тип_партнера = partner.Тип_партнера, 
+                    Скидка = discountValue 
                 });
             }
 
-            listPartner.ItemsSource = listpartners;
+            listPartner.ItemsSource = partnerDisplayList;
         }
 
-        private void btnAddPartner_Click(object sender, RoutedEventArgs e)
+        private void AddPartnerButton_Click(object sender, RoutedEventArgs e)
         {
-            PartnerWindow pw = new PartnerWindow(null);
-            if (pw.ShowDialog() == true) tolist();
+            var partnerEditor = new PartnerWindow(null);
+            if (partnerEditor.ShowDialog() == true) 
+                RefreshPartnerList();
         }
 
-        private void listPartner_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void PartnerList_DoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (listPartner.SelectedItem is Partner selected)
+            if (listPartner.SelectedItem is Partner selectedPartner)
             {
-                PartnerWindow pw = new PartnerWindow(selected);
-                if (pw.ShowDialog() == true) tolist();
+                var partnerEditor = new PartnerWindow(selectedPartner);
+                if (partnerEditor.ShowDialog() == true) 
+                    RefreshPartnerList();
             }
         }
 
-        private void btnDeletePartner_Click(object sender, RoutedEventArgs e)
+        private void DeletePartnerButton_Click(object sender, RoutedEventArgs e)
         {
-            if (listPartner.SelectedItem is Partner selected)
+            if (listPartner.SelectedItem is Partner selectedPartner)
             {
-                if (MessageBox.Show("Удалить выбранного партнера?", "Подтверждение", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                var confirmation = MessageBox.Show("Вы действительно хотите удалить данного партнера?", 
+                    "Подтверждение удаления", MessageBoxButton.YesNo);
+                    
+                if (confirmation == MessageBoxResult.Yes)
                 {
-                    var p = db.Partners.Find(selected.ID);
-                    db.Partners.Remove(p);
-                    db.SaveChanges();
-                    tolist();
+                    var partnerToRemove = databaseContext.Partners.Find(selectedPartner.ID);
+                    databaseContext.Partners.Remove(partnerToRemove);
+                    databaseContext.SaveChanges();
+                    RefreshPartnerList();
                 }
             }
         }
 
-        private void btnProduct_Click(object sender, RoutedEventArgs e)
+        private void ShowSalesHistoryButton_Click(object sender, RoutedEventArgs e)
         {
-            if (listPartner.SelectedItem is Partner selected)
+            if (listPartner.SelectedItem is Partner selectedPartner)
             {
-                History historyWindow = new History(selected.ID);
+                var historyWindow = new History(selectedPartner.ID);
                 historyWindow.ShowDialog();
             }
         }
