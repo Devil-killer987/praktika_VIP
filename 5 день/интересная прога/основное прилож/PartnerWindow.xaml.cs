@@ -5,53 +5,60 @@ namespace Master_floor
 {
     public partial class PartnerWindow : Window
     {
-        TestBaseEntities db = new TestBaseEntities();
-        Partner _current;
+        private TestBaseEntities databaseContext = new TestBaseEntities();
+        private Partner currentPartner;
 
         public PartnerWindow(Partner partner)
         {
             InitializeComponent();
-            _current = partner;
+            currentPartner = partner;
 
-            if (_current != null)
+            if (currentPartner != null)
             {
-                tbName.Text = _current.Наименование_партнера;
-                tbType.Text = _current.Тип_партнера;
-                tbDirector.Text = _current.Директор;
-                tbRating.Text = _current.Рейтинг.ToString().Replace("Рейтинг: ", "");
+                // Заполнение полей при редактировании
+                tbName.Text = currentPartner.Наименование_партнера;
+                tbType.Text = currentPartner.Тип_партнера;
+                tbDirector.Text = currentPartner.Директор;
+                
+                // Извлечение числового значения рейтинга
+                string ratingValue = currentPartner.Рейтинг.ToString();
+                if (ratingValue.Contains("Рейтинг: "))
+                    ratingValue = ratingValue.Replace("Рейтинг: ", "");
+                tbRating.Text = ratingValue;
             }
         }
 
-        private void btnSave_Click(object sender, RoutedEventArgs e)
+        private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                if (_current == null) // Создание
+                if (currentPartner == null) // Режим создания нового партнера
                 {
-                    Partner p = new Partner
+                    var newPartner = new Partner
                     {
                         Наименование_партнера = tbName.Text,
                         Тип_партнера = tbType.Text,
                         Директор = tbDirector.Text,
                         Рейтинг = double.Parse(tbRating.Text)
                     };
-                    db.Partners.Add(p);
+                    databaseContext.Partners.Add(newPartner);
                 }
-                else // Редактирование
+                else // Режим редактирования существующего
                 {
-                    var p = db.Partners.Find(_current.ID);
-                    p.Наименование_партнера = tbName.Text;
-                    p.Тип_партнера = tbType.Text;
-                    p.Директор = tbDirector.Text;
-                    p.Рейтинг = double.Parse(tbRating.Text);
+                    var existingPartner = databaseContext.Partners.Find(currentPartner.ID);
+                    existingPartner.Наименование_партнера = tbName.Text;
+                    existingPartner.Тип_партнера = tbType.Text;
+                    existingPartner.Директор = tbDirector.Text;
+                    existingPartner.Рейтинг = double.Parse(tbRating.Text);
                 }
 
-                db.SaveChanges();
+                databaseContext.SaveChanges();
                 DialogResult = true;
             }
-            catch (Exception ex)
+            catch (Exception error)
             {
-                MessageBox.Show("Ошибка сохранения: " + ex.Message);
+                MessageBox.Show("Произошла ошибка при сохранении: " + error.Message, 
+                    "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }
