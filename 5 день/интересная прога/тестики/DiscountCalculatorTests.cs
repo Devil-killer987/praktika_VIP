@@ -7,34 +7,107 @@ namespace MasterFloorTests
     public class DiscountCalculatorTests
     {
         [TestMethod]
-        public void Test_0Percent()
+        public void CalculateDiscount_WithTotalLessThan10000_Returns0Percent()
         {
-            Assert.AreEqual("0%", DiscountCalculator.CalculateDiscount(5000));
+            // Arrange
+            decimal total = 5000;
+            
+            // Act
+            string result = DiscountCalculator.CalculateDiscount(total);
+            
+            // Assert
+            Assert.AreEqual("0%", result);
         }
 
         [TestMethod]
-        public void Test_5Percent()
+        public void CalculateDiscount_WithTotalBetween10000And49999_Returns5Percent()
         {
-            Assert.AreEqual("5%", DiscountCalculator.CalculateDiscount(15000));
+            // Arrange
+            decimal total = 15000;
+            
+            // Act
+            string result = DiscountCalculator.CalculateDiscount(total);
+            
+            // Assert
+            Assert.AreEqual("5%", result);
         }
 
         [TestMethod]
-        public void Test_10Percent()
+        public void CalculateDiscount_WithTotalBetween50000And199999_Returns10Percent()
         {
-            Assert.AreEqual("10%", DiscountCalculator.CalculateDiscount(60000));
+            // Arrange
+            decimal total = 60000;
+            
+            // Act
+            string result = DiscountCalculator.CalculateDiscount(total);
+            
+            // Assert
+            Assert.AreEqual("10%", result);
         }
 
         [TestMethod]
-        public void Test_15Percent()
+        public void CalculateDiscount_WithTotal200000OrMore_Returns15Percent()
         {
-            Assert.AreEqual("15%", DiscountCalculator.CalculateDiscount(400000));
+            // Arrange
+            decimal total = 400000;
+            
+            // Act
+            string result = DiscountCalculator.CalculateDiscount(total);
+            
+            // Assert
+            Assert.AreEqual("15%", result);
         }
 
         [TestMethod]
-        public void Test_BoundaryValue()
+        public void CalculateDiscount_WithExactly10000_Returns5Percent()
         {
-            // Граничное значение 10000 должно давать 5%
-            Assert.AreEqual("5%", DiscountCalculator.CalculateDiscount(10000));
+            // Arrange
+            decimal total = 10000;
+            
+            // Act
+            string result = DiscountCalculator.CalculateDiscount(total);
+            
+            // Assert
+            Assert.AreEqual("5%", result);
+        }
+
+        [TestMethod]
+        public void CalculateDiscount_WithExactly50000_Returns10Percent()
+        {
+            // Arrange
+            decimal total = 50000;
+            
+            // Act
+            string result = DiscountCalculator.CalculateDiscount(total);
+            
+            // Assert
+            Assert.AreEqual("10%", result);
+        }
+
+        [TestMethod]
+        public void CalculateDiscount_WithExactly200000_Returns15Percent()
+        {
+            // Arrange
+            decimal total = 200000;
+            
+            // Act
+            string result = DiscountCalculator.CalculateDiscount(total);
+            
+            // Assert
+            Assert.AreEqual("15%", result);
+        }
+
+        [TestMethod]
+        public void CalculateDiscount_WithTotalZero_Returns0Percent()
+        {
+            // Arrange
+            decimal total = 0;
+            
+            // Act
+            string result = DiscountCalculator.CalculateDiscount(total);
+            
+            // Assert
+            Assert.AreEqual("0%", result);
         }
     }
 }
