@@ -6,108 +6,142 @@ namespace MasterFloorTests
     [TestClass]
     public class DiscountCalculatorTests
     {
-        [TestMethod]
-        public void CalculateDiscount_WithTotalLessThan10000_Returns0Percent()
+        private DiscountCalculator _calculator;
+
+        [TestInitialize]
+        public void Setup()
         {
-            // Arrange
-            decimal total = 5000;
-            
-            // Act
-            string result = DiscountCalculator.CalculateDiscount(total);
-            
-            // Assert
-            Assert.AreEqual("0%", result);
+            _calculator = new DiscountCalculator();
         }
 
         [TestMethod]
-        public void CalculateDiscount_WithTotalBetween10000And49999_Returns5Percent()
+        public void TestLowSales_NoDiscount()
         {
             // Arrange
-            decimal total = 15000;
+            double salesAmount = 5000;
             
             // Act
-            string result = DiscountCalculator.CalculateDiscount(total);
+            string discountResult = DiscountCalculator.CalculateDiscount(salesAmount);
             
             // Assert
-            Assert.AreEqual("5%", result);
+            Assert.AreEqual("0%", discountResult);
         }
 
         [TestMethod]
-        public void CalculateDiscount_WithTotalBetween50000And199999_Returns10Percent()
+        public void TestMediumSales_FivePercentDiscount()
         {
             // Arrange
-            decimal total = 60000;
+            double salesAmount = 15000;
             
             // Act
-            string result = DiscountCalculator.CalculateDiscount(total);
+            string discountResult = DiscountCalculator.CalculateDiscount(salesAmount);
             
             // Assert
-            Assert.AreEqual("10%", result);
+            Assert.AreEqual("5%", discountResult);
         }
 
         [TestMethod]
-        public void CalculateDiscount_WithTotal200000OrMore_Returns15Percent()
+        public void TestHighSales_TenPercentDiscount()
         {
             // Arrange
-            decimal total = 400000;
+            double salesAmount = 60000;
             
             // Act
-            string result = DiscountCalculator.CalculateDiscount(total);
+            string discountResult = DiscountCalculator.CalculateDiscount(salesAmount);
             
             // Assert
-            Assert.AreEqual("15%", result);
+            Assert.AreEqual("10%", discountResult);
         }
 
         [TestMethod]
-        public void CalculateDiscount_WithExactly10000_Returns5Percent()
+        public void TestVeryHighSales_FifteenPercentDiscount()
         {
             // Arrange
-            decimal total = 10000;
+            double salesAmount = 400000;
             
             // Act
-            string result = DiscountCalculator.CalculateDiscount(total);
+            string discountResult = DiscountCalculator.CalculateDiscount(salesAmount);
             
             // Assert
-            Assert.AreEqual("5%", result);
+            Assert.AreEqual("15%", discountResult);
         }
 
         [TestMethod]
-        public void CalculateDiscount_WithExactly50000_Returns10Percent()
+        public void TestBoundaryTenThousand_FivePercentDiscount()
         {
             // Arrange
-            decimal total = 50000;
+            double salesAmount = 10000;
             
             // Act
-            string result = DiscountCalculator.CalculateDiscount(total);
+            string discountResult = DiscountCalculator.CalculateDiscount(salesAmount);
             
             // Assert
-            Assert.AreEqual("10%", result);
+            Assert.AreEqual("5%", discountResult);
         }
 
         [TestMethod]
-        public void CalculateDiscount_WithExactly200000_Returns15Percent()
+        public void TestBoundaryFiftyThousand_TenPercentDiscount()
         {
             // Arrange
-            decimal total = 200000;
+            double salesAmount = 50000;
             
             // Act
-            string result = DiscountCalculator.CalculateDiscount(total);
+            string discountResult = DiscountCalculator.CalculateDiscount(salesAmount);
             
             // Assert
-            Assert.AreEqual("15%", result);
+            Assert.AreEqual("10%", discountResult);
         }
 
         [TestMethod]
-        public void CalculateDiscount_WithTotalZero_Returns0Percent()
+        public void TestBoundaryTwoHundredThousand_FifteenPercentDiscount()
         {
             // Arrange
-            decimal total = 0;
+            double salesAmount = 200000;
             
             // Act
-            string result = DiscountCalculator.CalculateDiscount(total);
+            string discountResult = DiscountCalculator.CalculateDiscount(salesAmount);
             
             // Assert
-            Assert.AreEqual("0%", result);
+            Assert.AreEqual("15%", discountResult);
+        }
+
+        [TestMethod]
+        public void TestZeroSales_NoDiscount()
+        {
+            // Arrange
+            double salesAmount = 0;
+            
+            // Act
+            string discountResult = DiscountCalculator.CalculateDiscount(salesAmount);
+            
+            // Assert
+            Assert.AreEqual("0%", discountResult);
+        }
+
+        [TestMethod]
+        public void TestSalesJustBelowThreshold_NoDiscount()
+        {
+            // Arrange
+            double salesAmount = 9999.99;
+            
+            // Act
+            string discountResult = DiscountCalculator.CalculateDiscount(salesAmount);
+            
+            // Assert
+            Assert.AreEqual("0%", discountResult);
+        }
+
+        [TestMethod]
+        public void TestSalesJustAboveMaximum_FifteenPercentDiscount()
+        {
+            // Arrange
+            double salesAmount = 500000;
+            
+            // Act
+            string discountResult = DiscountCalculator.CalculateDiscount(salesAmount);
+            
+            // Assert
+            Assert.AreEqual("15%", discountResult);
         }
     }
 }
