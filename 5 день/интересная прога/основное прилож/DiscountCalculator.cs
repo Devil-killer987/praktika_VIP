@@ -2,12 +2,25 @@ namespace Master_floor
 {
     public static class DiscountCalculator
     {
-        public static string CalculateDiscount(double sum)
+        public static string CalculateDiscount(double totalSales)
         {
-            if (sum < 10000) return "0%";
-            if (sum >= 10000 && sum < 50000) return "5%";
-            if (sum >= 50000 && sum < 300000) return "10%";
-            return "15%";
+            // Определение процента скидки на основе объема продаж
+            if (totalSales < 10000)
+            {
+                return "0%";
+            }
+            else if (totalSales >= 10000 && totalSales < 50000)
+            {
+                return "5%";
+            }
+            else if (totalSales >= 50000 && totalSales < 300000)
+            {
+                return "10%";
+            }
+            else
+            {
+                return "15%";
+            }
         }
     }
 }
